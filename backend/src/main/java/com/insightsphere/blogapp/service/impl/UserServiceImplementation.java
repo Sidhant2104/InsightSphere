@@ -1,13 +1,23 @@
 package com.insightsphere.blogapp.service.impl;
 
 import com.insightsphere.blogapp.dto.UserDTO;
+import com.insightsphere.blogapp.exception.EmailAlreadyExistsException;
+import com.insightsphere.blogapp.exception.UsernameAlreadyExistsException;
+import com.insightsphere.blogapp.repository.UserRepository;
 import com.insightsphere.blogapp.service.UserService;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class UserServiceImplementation implements UserService {
 
+    @Autowired
+    private UserRepository userRepository;
+
     public UserDTO registerUser(UserDTO userDTO) {
-        // Implementation for registering a new user
+        
         return null;
     }
 
@@ -17,7 +27,7 @@ public class UserServiceImplementation implements UserService {
     } 
     
     public UserDTO getUserByEmail(String email) {
-        // Implementation for getting a user by email
+        // wait
         return null;
     }
 
@@ -36,8 +46,13 @@ public class UserServiceImplementation implements UserService {
         return false;
     }
 
-    public boolean emailExists(String email) {
-        // Implementation for checking if an email exists
+    public boolean emailExists(UserDTO userDTO) {
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new EmailAlreadyExistsException("Email " + userDTO.getEmail() + " is already in use!");
+        }
+        if(userRepository.existsByUsername(userDTO.getUsername())){
+            throw new UsernameAlreadyExistsException("Username " + userDTO.getUsername() + "already exists!");
+        }
         return false;
     }
 
