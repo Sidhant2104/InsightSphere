@@ -1,5 +1,3 @@
-Perfect! Here’s a **GitHub-friendly version** of your README with badges and a clean one-line description at the top, ready to copy-paste into `README.md`:
-
 ```markdown
 # InsightSphere – Blog Application Backend 🚀
 
