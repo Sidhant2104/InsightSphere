@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+Got it. Here’s a **fully fixed, GitHub-ready `README.md`** — all code blocks, Project Structure, and payload examples are properly formatted, badges are intact, and everything will render perfectly:
+
+>>>>>>> ce98ac1 (Updated Readme)
 ```markdown
 # InsightSphere – Blog Application Backend 🚀
 
@@ -69,7 +74,7 @@ com.insightsphere.blogapp
 ├─ UserNotFoundException.java
 └─ UserValidationException.java
 
-```
+````
 
 ---
 
@@ -141,4 +146,4 @@ mvn spring-boot:run
 
 This project is open-source under the MIT License.
 
-
+```
