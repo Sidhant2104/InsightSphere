@@ -1,15 +1,21 @@
 package com.insightsphere.blogapp.service.impl;
 
+import com.insightsphere.blogapp.dto.LoginDTO;
 import com.insightsphere.blogapp.dto.UserDTO;
-import com.insightsphere.blogapp.exception.EmailAlreadyExistsException;
-import com.insightsphere.blogapp.exception.UsernameAlreadyExistsException;
 import com.insightsphere.blogapp.repository.UserRepository;
 import com.insightsphere.blogapp.service.UserService;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.insightsphere.blogapp.entity.User;
+import com.insightsphere.blogapp.exception.InvalidCredentialsException;
+import com.insightsphere.blogapp.exception.UserNotFoundException;
+import com.insightsphere.blogapp.exception.UserValidationException;
+
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -17,56 +23,86 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
     public UserDTO registerUser(UserDTO userDTO) {
-        // TODO: Implement user registration logic
-        return null;
+        
+        List<String> messages = validateUserUniqueness(userDTO);
+        if (!messages.isEmpty()) {
+            throw new UserValidationException(messages);
+        }
+
+        User user = new User();
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setRole(User.Role.USER); 
+
+        User savedUser = userRepository.save(user);
+
+        return mapToDTO(savedUser);
+
     }
 
-    public UserDTO getUserById(Long id) {
-        // Implementation for getting a user by ID
-        return null;
-    } 
-    
-    public UserDTO getUserByEmail(String email) {
-        // wait
-        return null;
-    }
-
-    public UserDTO getUserByUsername(String username) {
-        // Implementation for getting a user by username
-        return null;
-    }
-
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
-        // Implementation for updating a user
-        return null;
-    }
-
-    public boolean deleteUser(Long userId) {
-        // Implementation for deleting a user
-        return false;
-    }
-
-    public List<String> emailExists(UserDTO userDTO) {
+    @Override
+    public List<String> validateUserUniqueness(UserDTO userDTO) {
         List<String> messages = new ArrayList<>();
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             messages.add("Email already exists!");
         }
-        if(userRepository.existsByUsername(userDTO.getUsername())){
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
             messages.add("Username already exists!");
         }
         return messages;
     }
 
-    public boolean usernameExists(String username) {
-        // Implementation for checking if a username exists
-        return false;
+    @Override
+    public UserDTO loginUser(LoginDTO loginDTO){
+        User user = userRepository.findByUsername(loginDTO.getUsername()).orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
+
+        if(!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())){
+            throw new InvalidCredentialsException("Invalid username or password");
+        }
+
+        return mapToDTO(user);
+
     }
 
-    public List<UserDTO> getAllUsers() {
-        // Implementation for getting all users
-        return null;
-    }
 
-  
+    private UserDTO mapToDTO(User user) {
+    UserDTO dto = new UserDTO();
+    dto.setId(user.getId());
+    dto.setUsername(user.getUsername());
+    dto.setEmail(user.getEmail());
+    dto.setRole(user.getRole());
+    dto.setFirstName(user.getFirstName());
+    dto.setLastName(user.getLastName());
+    dto.setCreatedAt(user.getCreatedAt());
+    dto.setUpdatedAt(user.getUpdatedAt());
+    return dto;
+}
+
+
+    // Other methods remain placeholders for now
+    @Override
+    public UserDTO getUserById(Long id) { return null; }
+
+    @Override
+    public UserDTO getUserByEmail(String email) { return null; }
+
+    @Override
+    public UserDTO getUserByUsername(String username) { return null; }
+
+    @Override
+    public UserDTO updateUser(Long userId, UserDTO userDTO) { return null; }
+
+    @Override
+    public boolean deleteUser(Long userId) { return false; }
+
+    @Override
+    public List<UserDTO> getAllUsers() { return null; }
 }
