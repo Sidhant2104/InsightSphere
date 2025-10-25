@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -17,7 +18,7 @@ public class UserServiceImplementation implements UserService {
     private UserRepository userRepository;
 
     public UserDTO registerUser(UserDTO userDTO) {
-        
+        // TODO: Implement user registration logic
         return null;
     }
 
@@ -46,14 +47,15 @@ public class UserServiceImplementation implements UserService {
         return false;
     }
 
-    public boolean emailExists(UserDTO userDTO) {
+    public List<String> emailExists(UserDTO userDTO) {
+        List<String> messages = new ArrayList<>();
         if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new EmailAlreadyExistsException("Email " + userDTO.getEmail() + " is already in use!");
+            messages.add("Email already exists!");
         }
         if(userRepository.existsByUsername(userDTO.getUsername())){
-            throw new UsernameAlreadyExistsException("Username " + userDTO.getUsername() + "already exists!");
+            messages.add("Username already exists!");
         }
-        return false;
+        return messages;
     }
 
     public boolean usernameExists(String username) {

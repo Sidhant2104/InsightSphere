@@ -2,6 +2,7 @@ package com.insightsphere.blogapp.dto;
 
 import jakarta.validation.constraints.*;
 import com.insightsphere.blogapp.entity.User;
+import java.time.LocalDateTime;
 
 public class UserDTO {
 
@@ -30,6 +31,9 @@ public class UserDTO {
     private String lastName;
 
     private User.Role role = User.Role.USER; // default role
+    
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public UserDTO() { }
 
@@ -54,4 +58,10 @@ public class UserDTO {
 
     public User.Role getRole() { return role; }
     public void setRole(User.Role role) { this.role = role; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
